@@ -1,0 +1,10 @@
+title: Report banane ka flow
+direction: LR
+Idea [Idea / question] -> Research (Research)
+Research -> Notes (Notes in HQ)
+Notes -> Draft (Draft the report)
+Draft -> Charts {Need a diagram?}
+Charts ->|yes| Studio (Diagram Studio)
+Charts ->|no| Review (Review)
+Studio -> Review
+Review -> Done ((Publish))

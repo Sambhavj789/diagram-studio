@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagram Studio — text to diagram</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <div class="brand-text">
+        <h1>Diagram Studio</h1>
+        <p>Write a few lines. Get a clean diagram.</p>
+      </div>
+    </div>
+    <div class="tools">
+      <label class="field">
+        <span>Example</span>
+        <select id="examples" aria-label="Load an example"></select>
+      </label>
+      <label class="field compact">
+        <span>Flow</span>
+        <select id="dir" aria-label="Diagram direction">
+          <option value="TB">Top → bottom</option>
+          <option value="LR">Left → right</option>
+        </select>
+      </label>
+      <button class="btn ghost" id="themeBtn" type="button" title="Toggle diagram theme">Dark</button>
+      <span class="divider" aria-hidden="true"></span>
+      <button class="btn primary" id="svgBtn" type="button" title="Download as SVG (Ctrl+S)">Download SVG</button>
+      <button class="btn" id="pngBtn" type="button" title="Download as 2x PNG">PNG</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="editor" aria-label="Diagram source">
+      <div class="pane-head">
+        <span>Source</span>
+        <span id="stats" class="stats">—</span>
+      </div>
+      <textarea id="source" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Diagram source text"></textarea>
+      <details class="cheatsheet">
+        <summary>Syntax cheat sheet</summary>
+        <div class="cheat-body">
+          <p><code>A -&gt; B</code> arrow &nbsp; <code>A -&gt; B : label</code> edge text &nbsp; <code>A -&gt;|label| B</code> edge text</p>
+          <p><code>A -.-&gt; B</code> dashed &nbsp; <code>A &lt;-&gt; B</code> two-way &nbsp; <code>A -&gt; A</code> self loop</p>
+          <p><code>A [Box]</code> &nbsp; <code>B (Pill)</code> &nbsp; <code>C {Decision?}</code> &nbsp; <code>D ((End))</code></p>
+          <p><code>group Money { ... }</code> cluster &nbsp; <code>title: ...</code> &nbsp; <code>direction: LR</code></p>
+          <p>Indented lines with no arrows become a tree / mind map. <code>\n</code> breaks a label into two lines.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="preview" aria-label="Preview">
+      <div class="pane-head">
+        <span>Preview</span>
+        <span class="hint">drag to pan · scroll to zoom · double-click to fit</span>
+      </div>
+      <div id="stage" class="stage">
+        <div id="canvas" class="canvas"></div>
+        <div class="zoombar">
+          <button class="zbtn" id="zoomOut" type="button" aria-label="Zoom out">−</button>
+          <button class="zlabel" id="zoomLabel" type="button" title="Reset zoom">100%</button>
+          <button class="zbtn" id="zoomIn" type="button" aria-label="Zoom in">+</button>
+          <button class="zbtn fit" id="fitBtn" type="button" title="Fit to view">Fit</button>
+        </div>
+        <div id="error" class="error" role="alert" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

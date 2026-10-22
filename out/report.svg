@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1558" height="252" viewBox="0 0 1558 252" role="img" aria-label="Report banane ka flow">
+<defs>
+<marker id="ds-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/></marker>
+</defs>
+<rect x="0" y="0" width="1558" height="252" fill="#ffffff"/>
+<text x="779" y="24" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Report banane ka flow</text>
+<path d="M 167 110 C 202.1 110, 209.9 110, 245 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 332 110 C 367.1 110, 374.9 110, 410 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 519 110 C 554.1 110, 561.9 110, 597 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 741 110 C 776.1 110, 783.9 110, 819 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 1011 110 C 1046.1 110, 1053.9 110, 1089 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<rect x="1032" y="101" width="36" height="18" rx="5" fill="#ffffff" stroke="#475569" stroke-opacity="0.22"/>
+<text x="1050" y="114" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="11" font-weight="500" fill="#64748b">yes</text>
+<path d="M 915 137 C 915 222, 1333.5 222, 1333.5 129" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<rect x="1109.75" y="190.75" width="29" height="18" rx="5" fill="#ffffff" stroke="#475569" stroke-opacity="0.22"/>
+<text x="1124.25" y="203.75" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="11" font-weight="500" fill="#64748b">no</text>
+<path d="M 1219 110 C 1254.1 110, 1261.9 110, 1297 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 1370 110 C 1405.1 110, 1412.9 110, 1448 110" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<g data-node="Idea">
+<rect x="30" y="93" width="137" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="98.5" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="98.5" y="110">Idea / question</tspan>
+</text>
+</g>
+<g data-node="Research">
+<rect x="245" y="91" width="87" height="38" rx="19" fill="#ecfdf5" stroke="#047857" stroke-width="1.6"/>
+<text x="288.5" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="288.5" y="110">Research</tspan>
+</text>
+</g>
+<g data-node="Notes">
+<rect x="410" y="91" width="109" height="38" rx="19" fill="#ecfdf5" stroke="#047857" stroke-width="1.6"/>
+<text x="464.5" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="464.5" y="110">Notes in HQ</tspan>
+</text>
+</g>
+<g data-node="Draft">
+<rect x="597" y="91" width="144" height="38" rx="19" fill="#ecfdf5" stroke="#047857" stroke-width="1.6"/>
+<text x="669" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="669" y="110">Draft the report</tspan>
+</text>
+</g>
+<g data-node="Charts">
+<polygon points="915,83 1011,110 915,137 819,110" fill="#fffbeb" stroke="#b45309" stroke-width="1.6"/>
+<text x="915" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">
+<tspan x="915" y="110">Need a diagram?</tspan>
+</text>
+</g>
+<g data-node="Studio">
+<rect x="1089" y="91" width="130" height="38" rx="19" fill="#ecfdf5" stroke="#047857" stroke-width="1.6"/>
+<text x="1154" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="1154" y="110">Diagram Studio</tspan>
+</text>
+</g>
+<g data-node="Review">
+<rect x="1297" y="91" width="73" height="38" rx="19" fill="#ecfdf5" stroke="#047857" stroke-width="1.6"/>
+<text x="1333.5" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="1333.5" y="110">Review</tspan>
+</text>
+</g>
+<g data-node="Done">
+<circle cx="1488" cy="110" r="40" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.6"/>
+<text x="1488" y="110" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="1488" y="110">Publish</tspan>
+</text>
+</g>
+</svg>

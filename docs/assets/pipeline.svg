@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="438" height="1046" viewBox="0 0 438 1046" role="img" aria-label="Text to SVG pipeline">
+<defs>
+<marker id="ds-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/></marker>
+</defs>
+<rect x="0" y="0" width="438" height="1046" fill="#ffffff"/>
+<text x="219" y="24" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Text to SVG pipeline</text>
+<rect x="21.5" y="44" width="307" height="76" rx="12" fill="#f1f5f9" fill-opacity="0.55" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="35.5" y="63" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#64748b">INPUT</text>
+<rect x="49.5" y="156" width="188.5" height="524" rx="12" fill="#f1f5f9" fill-opacity="0.55" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="63.5" y="175" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#64748b">CORE</text>
+<rect x="14" y="716" width="322" height="300" rx="12" fill="#f1f5f9" fill-opacity="0.55" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="28" y="735" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#64748b">OUTPUT</text>
+<path d="M 81 104 C 81 139.1, 175 146.9, 175 182" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 233.5 104 C 233.5 139.1, 175 146.9, 175 182" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 175 216 C 175 251.1, 223 258.9, 223 294" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#ds-arrow)"/>
+<rect x="170.5" y="246" width="57" height="18" rx="5" fill="#ffffff" stroke="#475569" stroke-opacity="0.22"/>
+<text x="199" y="259" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="11" font-weight="500" fill="#64748b">line N</text>
+<path d="M 175 216 C 175 251.1, 98.5 258.9, 98.5 294" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 98.5 328 C 98.5 363.1, 175 370.9, 175 406" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 175 440 C 175 475.1, 175 482.9, 175 518" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 175 552 C 175 587.1, 175 594.9, 175 630" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 175 664 C 175 699.1, 175 706.9, 175 742" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 175 776 C 175 811.1, 98.5 818.9, 98.5 854" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 175 776 C 175 811.1, 258.5 818.9, 258.5 854" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 98.5 888 C 98.5 923.1, 175 930.9, 175 966" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 284.5 311 C 408 311, 408 199, 208 199" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="6 5" marker-end="url(#ds-arrow)"/>
+<rect x="314.0625" y="246" width="107" height="18" rx="5" fill="#ffffff" stroke="#475569" stroke-opacity="0.22"/>
+<text x="367.5625" y="259" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="11" font-weight="500" fill="#64748b">fix and retry</text>
+<g data-node="Text">
+<rect x="37.5" y="70" width="87" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="81" y="87" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="81" y="87">DSL text</tspan>
+</text>
+</g>
+<g data-node="Files">
+<rect x="154.5" y="70" width="158" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="233.5" y="87" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="233.5" y="87">Example .txt files</tspan>
+</text>
+</g>
+<g data-node="Parse">
+<rect x="142" y="182" width="66" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="175" y="199" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="175" y="199">parse</tspan>
+</text>
+</g>
+<g data-node="Model">
+<rect x="65.5" y="294" width="66" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="98.5" y="311" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="98.5" y="311">model</tspan>
+</text>
+</g>
+<g data-node="Layout">
+<rect x="138.5" y="406" width="73" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="175" y="423" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="175" y="423">layout</tspan>
+</text>
+</g>
+<g data-node="Geo">
+<rect x="131.5" y="518" width="87" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="175" y="535" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="175" y="535">geometry</tspan>
+</text>
+</g>
+<g data-node="Render">
+<rect x="128" y="630" width="94" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="175" y="647" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="175" y="647">renderSVG</tspan>
+</text>
+</g>
+<g data-node="Svg">
+<rect x="124.5" y="742" width="101" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="175" y="759" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="175" y="759">SVG string</tspan>
+</text>
+</g>
+<g data-node="Browser">
+<rect x="30" y="854" width="137" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="98.5" y="871" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="98.5" y="871">Browser preview</tspan>
+</text>
+</g>
+<g data-node="Png">
+<rect x="138.5" y="966" width="73" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="175" y="983" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="175" y="983">PNG 2x</tspan>
+</text>
+</g>
+<g data-node="Cli">
+<rect x="197" y="854" width="123" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="258.5" y="871" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="258.5" y="871">CLI .svg file</tspan>
+</text>
+</g>
+<g data-node="Error">
+<rect x="161.5" y="294" width="123" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="223" y="311" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="223" y="311">Error message</tspan>
+</text>
+</g>
+</svg>

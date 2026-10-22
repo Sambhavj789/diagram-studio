@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="685" height="352" viewBox="0 0 685 352" role="img" aria-label="Files and dependencies">
+<defs>
+<marker id="ds-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/></marker>
+</defs>
+<rect x="0" y="0" width="685" height="352" fill="#ffffff"/>
+<text x="342.5" y="24" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Files and dependencies</text>
+<path d="M 131 87 C 175.775 87, 185.725 119, 230.5 119" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 80.5 232 C 80.5 304, 443 304, 443 168" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 303.5 119 C 348.275 119, 358.225 151, 403 151" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 325 183 C 360.1 183, 367.9 151, 403 151" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 127.5 151 C 164.175 151, 172.325 183, 209 183" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 80.5 168 C 80.5 322, 443 322, 443 168" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 483 151 C 524.4 151, 533.6 87, 575 87" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 483 151 C 522.825 151, 531.675 151, 571.5 151" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<path d="M 483 151 C 518.1 151, 525.9 215, 561 215" fill="none" stroke="#475569" stroke-width="1.7" stroke-linecap="round" marker-end="url(#ds-arrow)"/>
+<g data-node="Index">
+<rect x="30" y="70" width="101" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="80.5" y="87" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="80.5" y="87">index.html</tspan>
+</text>
+</g>
+<g data-node="App">
+<rect x="230.5" y="102" width="73" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="267" y="119" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="267" y="119">app.js</tspan>
+</text>
+</g>
+<g data-node="Cli">
+<rect x="44" y="198" width="73" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="80.5" y="215" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="80.5" y="215">cli.js</tspan>
+</text>
+</g>
+<g data-node="Core">
+<rect x="403" y="134" width="80" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="443" y="151" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="443" y="151">core.js</tspan>
+</text>
+</g>
+<g data-node="Tests">
+<rect x="209" y="166" width="116" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="267" y="183" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="267" y="183">test-core.js</tspan>
+</text>
+</g>
+<g data-node="Verify">
+<rect x="33.5" y="134" width="94" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="80.5" y="151" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="80.5" y="151">verify.js</tspan>
+</text>
+</g>
+<g data-node="Parse">
+<rect x="575" y="70" width="66" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="608" y="87" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="608" y="87">parse</tspan>
+</text>
+</g>
+<g data-node="Layout">
+<rect x="571.5" y="134" width="73" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="608" y="151" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="608" y="151">layout</tspan>
+</text>
+</g>
+<g data-node="Render">
+<rect x="561" y="198" width="94" height="34" rx="9" fill="#f8fafc" stroke="#475569" stroke-width="1.6"/>
+<text x="608" y="215" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a">
+<tspan x="608" y="215">renderSVG</tspan>
+</text>
+</g>
+</svg>

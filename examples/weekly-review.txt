@@ -1,0 +1,10 @@
+Weekly review
+  Wins
+    Shipped the task
+    Closed BUG-051
+  Lessons
+    Read the code first
+    Keep commits small
+  Next week
+    Device QA
+    Tool polish

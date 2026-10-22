@@ -1,0 +1,16 @@
+title: Sambhav-OS map
+direction: LR
+group Brain {
+  HQ [HQ vault] -> Notes (Notes & decisions)
+}
+group Build {
+  Projects (Projects) -> Code (Code)
+  Projects -> Agents (AI agents)
+}
+group Output {
+  Ships ((Shipped))
+}
+HQ -> Projects : dispatch
+Notes -> Projects : context
+Code -> Ships
+Agents -> Code : PRs
