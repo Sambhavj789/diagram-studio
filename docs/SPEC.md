@@ -95,7 +95,8 @@ group Money {
 - Same name (slugged) reuses the same group.
 - A node joins the innermost open group at **first creation**.
 - Rendering: dashed union box with an uppercased label. Groups do not affect ranks.
-- Practical limit: one visual level. Nested groups parse, but boxes can overlap.
+- One level only: opening a `group` while another group is still open is a line-numbered
+  error (`nested groups are not supported (one level)`).
 
 ### 1.7 Tree mode
 
@@ -123,6 +124,7 @@ Weekly review
 | Input | Error |
 |---|---|
 | `}` with no open group | `extra "}"` |
+| `group B {` while another group is open | `nested groups are not supported (one level)` |
 | `-> B` / `A ->` | `arrow needs a node on both sides` / `arrow needs a target` |
 | line that cannot be tokenized | `could not understand: ...` |
 

@@ -8,6 +8,13 @@ updated: 2026-10-22
 
 User-visible changes, newest first. Format: `## <version> — <date>` then bullets.
 
+## 0.1.3 — 2026-10-22
+
+- Fix: a `group` opened inside another group is now a line-numbered parse error
+  (`nested groups are not supported (one level)`). It used to drop the outer group
+  silently.
+- 18 core checks.
+
 ## 0.1.2 — 2026-10-22
 
 - Fix: a chain `A -> B -> C` now makes one edge per hop (it used to create a node named `B -> C`).

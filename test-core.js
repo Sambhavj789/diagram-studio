@@ -208,6 +208,14 @@ test('an empty box label falls back to the id', () => {
   assert.strictEqual(res.model.nodes.A.label, 'A');
 });
 
+test('a nested group is a line-numbered error', () => {
+  const res = core.parse('group Outer {\ngroup Inner {\nA -> B\n}\n}\n');
+  assert.strictEqual(res.ok, false);
+  assert.strictEqual(res.errors.length, 1);
+  assert.strictEqual(res.error.line, 2);
+  assert.strictEqual(res.error.message, 'nested groups are not supported (one level)');
+});
+
 test('an unclosed group is an error', () => {
   const res = core.parse('group Money {\nSalary -> Bills');
   assert.strictEqual(res.ok, false);

@@ -194,6 +194,9 @@
         return;
       }
       if ((dm = t.match(/^group\s+(.+?)\s*\{$/i))) {
+        // The inner group is still pushed so its closing "}" matches and the line
+        // produces exactly one error instead of a cascade of stray-brace errors.
+        if (stack.length) fail(lineNo, 'nested groups are not supported (one level)');
         var gname = labelText(dm[1]);
         var gid = slug(gname);
         if (!groupById[gid]) {
