@@ -26,7 +26,7 @@ The CLI prints node/edge counts and canvas size. Exit code `1` means a parse err
 `--json` switches the summary to one line of machine-readable JSON and still writes the SVG:
 
 ```json
-{"ok":true,"out":"report.svg","nodes":6,"edges":5,"width":640,"height":420,"dir":"LR"}
+{"ok":true,"out":"report.svg","nodes":8,"edges":8,"width":1558,"height":252,"dir":"LR"}
 ```
 
 On a parse error it prints `{"ok":false,"errors":[{"line":2,"message":"..."}]}` on stdout,
