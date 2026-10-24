@@ -18,9 +18,19 @@ preview on the right. Drag to pan, scroll to zoom, double-click to fit.
 node cli.js examples/report-pipeline.txt -o report.svg
 node cli.js examples/company-map.txt --theme dark -o company.svg
 Get-Content notes.txt | node cli.js - -o notes.svg
+node cli.js examples/report-pipeline.txt -o report.svg --json
 ```
 
 The CLI prints node/edge counts and canvas size. Exit code `1` means a parse error.
+
+`--json` switches the summary to one line of machine-readable JSON and still writes the SVG:
+
+```json
+{"ok":true,"out":"report.svg","nodes":6,"edges":5,"width":640,"height":420,"dir":"LR"}
+```
+
+On a parse error it prints `{"ok":false,"errors":[{"line":2,"message":"..."}]}` on stdout,
+exits `1` and writes no SVG. Usage errors still exit `2`.
 
 ## Syntax
 
@@ -90,7 +100,7 @@ Other rules:
 | `core.js` | parser + layout + SVG renderer (pure, works in Node) |
 | `app.js` | editor, pan/zoom, theme, export, autosave |
 | `cli.js` | headless SVG generation |
-| `test-core.js` | 17 parser/layout/render checks |
+| `test-core.js` | 21 parser/layout/render/CLI checks |
 | `verify.js` | one-command gate: tests, CLI smoke, docs and links |
 | `docs/` | architecture, spec, code map, decisions, troubleshooting |
 | `AGENTS.md` | entry point for AI agents working on the tool |
@@ -108,7 +118,7 @@ diagrams are generated from `docs/assets/*.dsl` with this tool. Every change mus
 node verify.js
 ```
 
-It runs the 17 core checks, a CLI smoke test, and the docs gate (required files, front
+It runs the 21 core checks, a CLI smoke test, and the docs gate (required files, front
 matter, links, CODEMAP coverage, no dependencies).
 
 ## Known limits

@@ -3,6 +3,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const core = require('./core.js');
 
 const ROOT = __dirname;
@@ -292,6 +293,61 @@ test('gallery files render with no overlapping node boxes', () => {
     'every gallery file must be rendered; rendered ' + rendered.length + ' of ' + files.length + ': ' + rendered.join(', ')
   );
   assert.strictEqual(failures.length, 0, 'gallery failures:\n  ' + failures.join('\n  '));
+});
+
+const OUT_DIR = path.join(ROOT, 'out');
+const JSON_SVG_REL = 'out/.json-test.svg';
+const JSON_BAD_REL = 'out/.json-bad-input.txt';
+const JSON_BAD_SVG_REL = 'out/.json-bad-input.svg';
+
+function runCli(args) {
+  return spawnSync(process.execPath, ['cli.js'].concat(args), { cwd: ROOT, encoding: 'utf8' });
+}
+
+function removeIfPresent(abs) {
+  if (fs.existsSync(abs)) fs.unlinkSync(abs);
+}
+
+function jsonLine(stdout) {
+  const lines = (stdout || '').trim().split(/\r?\n/).filter((l) => l.length > 0);
+  assert.strictEqual(lines.length, 1, 'expected exactly one line on stdout, got: ' + JSON.stringify(stdout));
+  return JSON.parse(lines[0]);
+}
+
+test('cli --json prints one JSON line and still writes the SVG', () => {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  try {
+    const res = runCli(['examples/report-pipeline.txt', '-o', JSON_SVG_REL, '--json']);
+    assert.strictEqual(res.status, 0, 'exit code ' + res.status + ': ' + (res.stderr || '').trim());
+    const data = jsonLine(res.stdout);
+    assert.strictEqual(data.ok, true);
+    assert.ok(data.nodes >= 1, 'nodes should be at least 1, got ' + data.nodes);
+    assert.ok(data.edges >= 1, 'edges should be at least 1, got ' + data.edges);
+    assert.strictEqual(typeof data.width, 'number');
+    assert.strictEqual(typeof data.height, 'number');
+    assert.strictEqual(data.out, JSON_SVG_REL);
+    assert.ok(fs.existsSync(path.join(ROOT, JSON_SVG_REL)), 'SVG was not written');
+  } finally {
+    removeIfPresent(path.join(ROOT, JSON_SVG_REL));
+  }
+});
+
+test('cli --json reports a parse error on stdout and writes no SVG', () => {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  fs.writeFileSync(path.join(ROOT, JSON_BAD_REL), 'A ->\n', 'utf8');
+  try {
+    const res = runCli([JSON_BAD_REL, '--json']);
+    assert.strictEqual(res.status, 1, 'expected exit 1, got ' + res.status);
+    const data = jsonLine(res.stdout);
+    assert.strictEqual(data.ok, false);
+    assert.ok(Array.isArray(data.errors) && data.errors.length >= 1, 'errors array missing');
+    assert.strictEqual(data.errors[0].line, 1);
+    assert.strictEqual(typeof data.errors[0].message, 'string');
+    assert.ok(!fs.existsSync(path.join(ROOT, JSON_BAD_SVG_REL)), 'no SVG should be written on a parse error');
+  } finally {
+    removeIfPresent(path.join(ROOT, JSON_BAD_REL));
+    removeIfPresent(path.join(ROOT, JSON_BAD_SVG_REL));
+  }
 });
 
 console.log('\n' + passed + ' checks passed');
