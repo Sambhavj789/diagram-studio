@@ -1,7 +1,11 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const core = require('./core.js');
+
+const ROOT = __dirname;
 
 let passed = 0;
 
@@ -23,6 +27,30 @@ function render(text, theme) {
   const lay = core.layout(res.model);
   const svg = core.renderSVG(res.model, lay, { theme: theme || 'light' });
   return { model: res.model, lay, svg };
+}
+
+// Gallery: every shipped example must parse, lay out and stay free of overlaps.
+const GALLERY = [
+  { dir: 'examples', ext: '.txt' },
+  { dir: 'docs/assets', ext: '.dsl' }
+];
+
+function galleryFiles() {
+  const files = [];
+  GALLERY.forEach(({ dir, ext }) => {
+    const abs = path.join(ROOT, dir);
+    if (!fs.existsSync(abs)) return;
+    fs.readdirSync(abs)
+      .filter((name) => name.endsWith(ext))
+      .sort()
+      .forEach((name) => files.push(path.join(dir, name)));
+  });
+  return files;
+}
+
+// Layout boxes expose w/h, which are the node box width and height.
+function boxesOverlap(a, b) {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 }
 
 test('parses a flow with shapes, labels, dashed and bidirectional edges', () => {
@@ -220,6 +248,50 @@ test('an unclosed group is an error', () => {
   const res = core.parse('group Money {\nSalary -> Bills');
   assert.strictEqual(res.ok, false);
   assert.ok(/missing its closing/.test(res.error.message));
+});
+
+test('gallery files render with no overlapping node boxes', () => {
+  const files = galleryFiles();
+  assert.ok(files.length > 0, 'found no gallery files in examples/ or docs/assets/');
+
+  const rendered = [];
+  const failures = [];
+
+  files.forEach((rel) => {
+    const text = fs.readFileSync(path.join(ROOT, rel), 'utf8');
+    const res = core.parse(text);
+    if (!res.ok) {
+      failures.push(rel + ': parse failed: ' + JSON.stringify(res.errors));
+      return;
+    }
+    const lay = core.layout(res.model);
+    rendered.push(rel);
+
+    const ids = Object.keys(lay.nodes);
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const a = lay.nodes[ids[i]];
+        const b = lay.nodes[ids[j]];
+        if (boxesOverlap(a, b)) {
+          failures.push(
+            rel +
+              ': node boxes overlap: ' +
+              ids[i] +
+              ' (x=' + a.x + ', y=' + a.y + ', width=' + a.w + ', height=' + a.h + ') and ' +
+              ids[j] +
+              ' (x=' + b.x + ', y=' + b.y + ', width=' + b.w + ', height=' + b.h + ')'
+          );
+        }
+      }
+    }
+  });
+
+  assert.strictEqual(
+    rendered.length,
+    files.length,
+    'every gallery file must be rendered; rendered ' + rendered.length + ' of ' + files.length + ': ' + rendered.join(', ')
+  );
+  assert.strictEqual(failures.length, 0, 'gallery failures:\n  ' + failures.join('\n  '));
 });
 
 console.log('\n' + passed + ' checks passed');
