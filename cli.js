@@ -10,8 +10,11 @@ function usage() {
     'Diagram Studio CLI',
     '',
     'Usage:',
-    '  node cli.js <input.txt> [-o out.svg] [--theme light|dark] [--direction TB|LR]',
+    '  node cli.js <input.txt> [-o out.svg] [--theme light|dark] [--direction TB|LR] [--json]',
     '  type input.txt | node cli.js - -o out.svg',
+    '',
+    'Options:',
+    '  --json   print one line of JSON (ok, out, nodes, edges, width, height, dir)',
     '',
     'Examples:',
     '  node cli.js examples/report-pipeline.txt -o report.svg',
@@ -20,10 +23,11 @@ function usage() {
 }
 
 function parseArgs(argv) {
-  const opts = { input: null, out: null, theme: 'light', direction: null };
+  const opts = { input: null, out: null, theme: 'light', direction: null, json: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-h' || a === '--help') { opts.help = true; continue; }
+    if (a === '--json') { opts.json = true; continue; }
     if (a === '-o' || a === '--out') { opts.out = argv[++i]; continue; }
     if (a === '--theme') { opts.theme = argv[++i] || 'light'; continue; }
     if (a === '--direction') { opts.direction = (argv[++i] || '').toUpperCase(); continue; }
@@ -69,7 +73,12 @@ function main() {
 
   const res = core.parse(text);
   if (!res.ok) {
-    res.errors.forEach((e) => console.error('Line ' + e.line + ': ' + e.message));
+    if (opts.json) {
+      const errors = (res.errors || []).map((e) => ({ line: e.line, message: e.message }));
+      console.log(JSON.stringify({ ok: false, errors: errors }));
+    } else {
+      res.errors.forEach((e) => console.error('Line ' + e.line + ': ' + e.message));
+    }
     process.exit(1);
   }
 
@@ -90,6 +99,19 @@ function main() {
   fs.writeFileSync(out, svg, 'utf8');
 
   const n = Object.keys(res.model.nodes).length;
+  if (opts.json) {
+    console.log(JSON.stringify({
+      ok: true,
+      out: out,
+      nodes: n,
+      edges: res.model.edges.length,
+      width: lay.width,
+      height: lay.height,
+      dir: lay.dir
+    }));
+    return;
+  }
+
   console.log('wrote ' + out + ' (' + n + ' nodes, ' + res.model.edges.length + ' edges, ' + lay.width + 'x' + lay.height + ', ' + lay.dir + ')');
 }
 
