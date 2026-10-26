@@ -285,7 +285,8 @@
     return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
   }
 
-  function layout(model) {
+  function layout(model, opts) {
+    opts = opts || {};
     var dir = model.direction === 'LR' ? 'LR' : 'TB';
     var nodes = model.nodes;
     var ids = model.order.filter(function (id) { return !!nodes[id]; });
@@ -402,8 +403,10 @@
       sizes[id] = { w: w, h: h, lines: lines };
     });
 
-    var rankGap = 78;
-    var nodeGap = 30;
+    // `compact` tightens the gaps for print (a report page, a book); the drawing keeps
+    // the same order and geometry, it just wastes less vertical space.
+    var rankGap = opts.compact ? 44 : 78;
+    var nodeGap = opts.compact ? 18 : 30;
 
     if (dir === 'TB') {
       var y = 0;

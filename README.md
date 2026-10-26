@@ -21,7 +21,11 @@ node cli.js examples/company-map.txt --theme dark -o company.svg
 Get-Content notes.txt | node cli.js - -o notes.svg
 node cli.js examples/report-pipeline.txt -o report.svg --json
 node cli.js examples/report-pipeline.txt -o report.png --scale 2
+node cli.js notes.md --outline -o notes.svg --watch
 ```
+
+`--watch` keeps the command running and re-renders whenever the input file changes;
+`--json` then prints one JSON line per render.
 
 The CLI prints node/edge counts and canvas size. Exit code `1` means a parse error.
 
@@ -47,6 +51,9 @@ ordinary tree DSL, so you can still edit the result.
 **PNG:** a `.png` output (or `--png`) uses an installed Edge/Chrome/Chromium headless.
 `--scale 1|2|3` (default 2) and `--transparent` are supported; `--browser PATH` or
 `DIAGRAM_STUDIO_BROWSER` picks the executable. SVG needs no browser.
+
+`--compact` tightens the gaps between ranks and nodes, which is what a report page or a
+book wants (a wide, short figure instead of a tall scroll).
 
 ## Syntax
 

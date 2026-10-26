@@ -8,6 +8,18 @@ updated: 2026-10-27
 
 User-visible changes, newest first. Format: `## <version> — <date>` then bullets.
 
+## 0.3.0 — 2026-10-27
+
+- CLI: `--watch` re-renders whenever the input file changes (`fs.watchFile`, 300 ms poll,
+  so atomic-save editors work too). A bad edit prints the error and keeps the last good
+  output; `--json` emits one JSON line per pass. `Ctrl+C` stops it.
+- CLI: `--compact` shrinks the rank and node gaps, so the same diagram fits a portrait
+  report page or book page with readable text.
+- CLI `--book`: note labels are Title Cased ("ml-introduction.md" -> "ML Introduction");
+  known acronyms (`ml`, `knn`, `api`, ...) stay upper case.
+- `make-book.ps1`: `map: true` in a book yaml prints one diagram of the whole book before
+  Part 1 (same tool as ```dsl, warns instead of failing when diagram-studio is missing).
+
 ## 0.2.0 — 2026-10-27
 
 - CLI: `--outline` / `--md` turns a Markdown outline (headings + lists) into a tree diagram;

@@ -138,6 +138,8 @@ node cli.js <input.txt> [-o out.svg] [--theme light|dark] [--direction TB|LR] [-
 node cli.js <input.md> --outline [-o out.svg]
 node cli.js <book.yaml> --book [-o out.svg]
 node cli.js <input.txt> -o out.png [--png] [--scale 1|2|3] [--transparent]
+node cli.js <input.txt> -o out.svg --watch
+node cli.js <input.txt> -o out.png --compact   # tighter gaps for print
 node cli.js - -o out.svg            # stdin
 node cli.js --help
 ```
@@ -169,7 +171,8 @@ document has several roots a synthetic root (the H1 or `Outline`) is added.
 
 `--book` reads a book yaml shaped like `templates/book.yaml` (`title`, `subtitle`,
 `chapters`/`parts` with `- part:` and `- <note>.md`): book -> part -> note, where a note
-label is its filename without `.md` and with `-`/`_` turned into spaces.
+label is its filename without `.md`, `-`/`_` turned into spaces and Title Cased (known
+acronyms such as `ml`, `knn`, `api` stay upper case).
 
 Both modes produce ordinary DSL. `--direction` still applies; without it the tree is `LR`.
 
@@ -180,8 +183,21 @@ Both modes produce ordinary DSL. `--direction` still applies; without it the tre
 - `--scale 1|2|3` (default `2`) scales the outer SVG dimensions; the drawing stays crisp
   because the SVG is re-rendered at the target size.
 - `--transparent` omits the background (PNG alpha channel; SVG without the background rect).
+- `--compact` shrinks the rank gap (78 -> 44) and the node gap (30 -> 18) without changing
+  order or geometry, so the same diagram fits a portrait page with readable text.
 - Browser lookup: `--browser PATH`, then `DIAGRAM_STUDIO_BROWSER`, then the usual install
   paths, then `PATH`. Failure is exit `2` with an actionable message.
+
+### 2.4 Watch
+
+- `--watch` renders once, then re-renders on every change of the input file (polls every
+  300 ms via `fs.watchFile`, so editors that replace the file still trigger it).
+- A failed pass (parse error, unreadable file) prints the error and keeps the last good
+  output; the process keeps watching. Only `Ctrl+C` / `SIGINT` stops it (exit `0`).
+- `--watch` needs a real file: `-` (stdin) is rejected with exit `2`.
+- `--json` prints exactly one JSON line per pass, success or failure. The human summary
+  and the `[hh:mm:ss] ... updated` line are suppressed in that mode.
+- Watch does not track files pulled in from elsewhere; only the input path matters.
 
 ## 3. Browser UI
 

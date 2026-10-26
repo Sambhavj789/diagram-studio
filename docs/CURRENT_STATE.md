@@ -9,7 +9,7 @@ updated: 2026-10-27
 ## Verified
 
 - Date: **2026-10-27**
-- Gate: `node verify.js` — docs, links, CODEMAP coverage, 28 core checks, CLI smoke, docs gate.
+- Gate: `node verify.js` — docs, links, CODEMAP coverage, 29 core checks, CLI smoke, docs gate.
 - Browser: Edge headless render + a Playwright run of theme toggle, file download,
   example switch, wheel zoom, reload/autosave. No console errors. PNG 1x/2x/3x and the
   Clear (transparent) option were re-checked headless on 2026-10-27.
@@ -27,8 +27,11 @@ updated: 2026-10-27
 - UI: live render, error line numbers, pan/zoom, fit, light/dark, autosave, direction
   rewrite, PNG scale 1x/2x/3x, Clear background, SVG and PNG download.
 - CLI: file/stdin, theme/direction overrides, `--json`, `--outline`/`--md`, `--book`,
-  PNG output (`--png`, `--scale`, `--transparent`), exit codes, summary line.
-- Outline: Markdown headings + lists and book yaml (parts + notes) become tree diagrams.
+  PNG output (`--png`, `--scale`, `--transparent`, `--compact`), `--watch`, exit codes,
+  summary line.
+- Outline: Markdown headings + lists and book yaml (parts + notes) become tree diagrams;
+  note labels are Title Cased.
+- Book pipeline: `map: true` in a book yaml prints a whole-book diagram before Part 1.
 - Marker ids are per-render (`ds-arrow-<hash>`), so several diagrams with different themes
   can share one HTML page.
 - Docs: this kit + root `AGENTS.md` + `INTEGRATIONS.md`; architecture/module diagrams
@@ -49,10 +52,12 @@ updated: 2026-10-27
 
 ## Next (proposed, not started)
 
-1. A `--watch` mode for report/book folders (re-render when a `.dsl` file changes).
+1. Folder watch: `--watch` follows one input file; a `--watch dir` mode would re-render
+   every diagram in a report/book folder.
 2. Sequence/ER shapes were requested twice; still out of scope until a real report needs
    them (D-002).
 3. Optional note-title lookup in `--book` maps (read each note's H1 instead of the filename).
+4. Left-aligned multi-line labels (items inside a layer box centre today).
 
 ## Not planned
 

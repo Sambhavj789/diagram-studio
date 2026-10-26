@@ -154,6 +154,21 @@ D -> C
   });
 });
 
+test('compact layout keeps the order but takes less space', () => {
+  const model = core.parse(`direction: TB
+A -> B
+B -> C
+C -> D
+D -> E
+`).model;
+  const normal = core.layout(model);
+  const tight = core.layout(model, { compact: true });
+  assert.ok(tight.height < normal.height, tight.height + ' !< ' + normal.height);
+  assert.ok(tight.width <= normal.width);
+  assert.deepStrictEqual(model.order, ['A', 'B', 'C', 'D', 'E']);
+  assert.strictEqual(tight.nodes.A.y, tight.nodes.A.cy - tight.nodes.A.h / 2);
+});
+
 test('a long edge label grows the canvas instead of clipping', () => {
   const { lay } = render(`direction: LR
 A -> B
@@ -224,8 +239,11 @@ chapters:
   assert.strictEqual(res.model.nodes.n0.label, 'Ml Foundations');
   assert.deepStrictEqual(
     res.model.order.slice(1).map((id) => res.model.nodes[id].label),
-    ['Part 1 - Regression', 'linear model', 'ridge', 'Part 2 - Trees', 'decision tree']
+    ['Part 1 - Regression', 'Linear Model', 'Ridge', 'Part 2 - Trees', 'Decision Tree']
   );
+  assert.strictEqual(outline.titleCase('ml-introduction'.replace(/-/g, ' ')), 'ML Introduction');
+  assert.strictEqual(outline.titleCase('knn'), 'KNN');
+  assert.strictEqual(outline.titleCase('gradient descent'), 'Gradient Descent');
 });
 
 test('renders group boxes and assigns members', () => {

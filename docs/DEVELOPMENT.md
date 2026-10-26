@@ -69,6 +69,9 @@ node cli.js examples/report-pipeline.txt -o out/report.svg
 | Label boxes / self-loop bounds | `test-core.js` | visual check |
 | Markdown + book outline | `test-core.js` | `--outline` on a real note |
 | CLI `--png` scale + transparent | `test-core.js` (skips without a browser) | open the PNG |
+| CLI `--watch` | - | run it, edit the input, break it, fix it |
+| Compact layout (`--compact`) | `test-core.js` | visual check |
+| Book map / ```dsl in books | `make-book.ps1` sample build | open the PDF page |
 | Browser render, pan/zoom, autosave | - | checklist below |
 | SVG download | CLI smoke | click + open the file |
 | PNG 1x/2x/3x + Clear | - | checklist below |

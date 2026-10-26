@@ -41,6 +41,23 @@ function listItem(line) {
   return { indent: m[1].replace(/\t/g, '  ').length, text: text };
 }
 
+// Note file names are slugs ("ml-introduction", "knn"); a book map reads better in
+// Title Case, with the usual acronyms kept upper case.
+const ACRONYMS = {
+  ml: 1, ai: 1, dsl: 1, api: 1, sql: 1, dfd: 1, er: 1, knn: 1, svm: 1, pca: 1, cnn: 1, rnn: 1,
+  csv: 1, ui: 1, ux: 1, pdf: 1, html: 1, css: 1, json: 1, yaml: 1, http: 1, url: 1, llm: 1,
+  nlp: 1, gpu: 1, cpu: 1, os: 1, id: 1, qa: 1, dsa: 1
+};
+
+function titleCase(text) {
+  return String(text == null ? '' : text).split(/\s+/).map(function (w) {
+    if (!w) return w;
+    if (w.length > 1 && w === w.toUpperCase()) return w;
+    if (ACRONYMS[w.toLowerCase()]) return w.toUpperCase();
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(' ');
+}
+
 function markdownToDsl(text, opts) {
   opts = opts || {};
   var lines = String(text == null ? '' : text).replace(/\r\n?/g, '\n').split('\n');
@@ -130,7 +147,7 @@ function bookYamlToDsl(text, opts) {
     }
     part.notes.forEach(function (note) {
       var base = note.split('/').pop().replace(/\.md$/i, '').replace(/[-_]+/g, ' ');
-      var nname = label(base);
+      var nname = label(titleCase(base));
       if (!nname) return;
       items.push({ depth: depth, text: nname, line: 1 });
       chapters++;
@@ -187,5 +204,6 @@ module.exports = {
   markdownToDsl: markdownToDsl,
   bookYamlToDsl: bookYamlToDsl,
   toDsl: toDsl,
-  label: label
+  label: label,
+  titleCase: titleCase
 };

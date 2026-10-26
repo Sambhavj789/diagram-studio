@@ -18,11 +18,28 @@ source next to the output so the diagram can be regenerated and reviewed.
 
 ## 1. AI report generator (`personal/ai-report`)
 
-`src/docx_writer.py` collects image lines (`![]` + the file path), so the report needs a
-raster file. Call the CLI once per figure and keep the JSON line for widths/logging.
+`src/docx_writer.py` embeds a picture for every Markdown image line, so the report needs a
+raster file. The integration lives in `src/dsl_diagrams.py`: it turns the project profile
+into DSL and calls the CLI for the two figures that are boxes and arrows.
 
-Python helper (no extra package; adjust the tool path once). A runnable version lives at
-`examples/python_figure.py` in this repo:
+| Figure key | Studio? | Why |
+|---|---|---|
+| `architecture` | yes | layers read top-to-bottom; text is one block per layer |
+| `activity` | yes | decisions are real diamonds with Yes/No labels |
+| `dfd0`, `dfd1`, `usecase`, `sequence`, `er`, `metrics` | no (matplotlib) | need ellipse, stick figure and lane shapes the DSL does not have |
+
+`diagrams.render_all()` tries the studio first for those two keys and silently falls back
+to matplotlib when node, the tool or the browser is missing. The render is cached by
+`sha1(spec + engine)`, so switching engine redraws once and unchanged specs are reused.
+
+Setup: nothing to install. The tool is found at `DIAGRAM_STUDIO` or `../../tools/diagram-studio`
+next to the repo; force the old path with `DIAGRAMS_ENGINE=matplotlib`.
+
+`--compact` is used for both figures: a page-tall flowchart takes a 3x smaller effective
+font once Word scales it to the page height, so the tight layout is what keeps the text
+readable.
+
+The same helper, standalone:
 
 ```python
 import json
@@ -88,11 +105,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ops\scripts\make-book.ps1 op
   slip into a book.
 - The tool path is `DIAGRAM_STUDIO` if set, otherwise `..\tools\diagram-studio` next to
   the HQ folder.
-- A book map (parts + notes) can be generated from the same yaml:
+- A book map (parts + notes) can be generated from the same yaml, or automatically: add
+  `map: true` to the yaml and the builder prints the map (`# Book map`) before Part 1.
 
 ```powershell
+# one-off, without changing the yaml
 node cli.js 10-atlas\ml\books\ml-foundations.yaml --book -o ops\book\out\ml-foundations-map.svg
 ```
+
+```yaml
+title: "Machine Learning Foundations"
+map: true          # print the book map before Part 1
+chapters:
+  ...
+```
+
+The map uses `--book` (parts + notes, Title Cased) at normal spacing; if node or the tool
+is missing the build only warns and continues without the page.
 
 ## 3. Notes / Obsidian
 
@@ -122,5 +151,7 @@ keeps the correct arrow colour.
 - Exit codes: `0` ok, `1` parse/outline error, `2` bad arguments/IO/missing browser.
 - PNG needs one of Edge/Chrome/Chromium. Set `DIAGRAM_STUDIO_BROWSER` on machines where
   the browser is not in a standard path.
+- `--watch` for a live preview while writing the DSL; `--compact` when the output goes on
+  a portrait page (report, book) instead of a slide.
 - Never edit the generated SVG by hand; edit the `.dsl` (or the note's fenced block) and
   re-run.
