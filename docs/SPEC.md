@@ -1,7 +1,7 @@
 ---
 title: Spec — DSL, CLI, UI, exports
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Spec
@@ -134,19 +134,54 @@ error and exits `1`.
 ## 2. CLI
 
 ```
-node cli.js <input.txt> [-o out.svg] [--theme light|dark] [--direction TB|LR]
+node cli.js <input.txt> [-o out.svg] [--theme light|dark] [--direction TB|LR] [--json]
+node cli.js <input.md> --outline [-o out.svg]
+node cli.js <book.yaml> --book [-o out.svg]
+node cli.js <input.txt> -o out.png [--png] [--scale 1|2|3] [--transparent]
 node cli.js - -o out.svg            # stdin
 node cli.js --help
 ```
 
 - `--theme=dark` and `--out=file` are accepted too.
 - Input defaults: none (required). Output defaults: same directory, input basename with
-  `.svg`; stdin → `diagram.svg` in the current directory.
-- `--direction` overrides the document.
+  `.svg` (`diagram.svg` for stdin); `.png` when the format is PNG.
+- `--direction` overrides the document. `--outline`/`--md` and `--book` are mutually
+  exclusive.
 - UTF-8 BOM is stripped.
 - Success prints one line: `wrote <file> (<n> nodes, <m> edges, <w>x<h>, <dir>)`.
-- Exit codes: `0` success, `1` parse error, `2` bad arguments / IO / invalid theme or
-  direction.
+- Exit codes: `0` success, `1` parse error (including an outline with no headings/lists),
+  `2` bad arguments / IO / invalid theme, direction or scale / PNG tooling missing.
+
+### 2.1 JSON
+
+`--json` prints exactly one line on stdout.
+
+- Success: `{ ok, out, format: "svg"|"png", nodes, edges, width, height, dir }` plus
+  `scale` and `transparent` for PNG.
+- Failure: `{ ok: false, errors: [{ line, message }] }`; no file is written.
+
+### 2.2 Outline input
+
+`--outline` (alias `--md`) reads Markdown and emits tree-mode DSL: `#`-`######` headings
+and `-`/`*`/`+`/numbered list items, nested by heading level and indentation. YAML front
+matter, fenced code, blockquotes and tables are ignored. The first H1 is the root; if the
+document has several roots a synthetic root (the H1 or `Outline`) is added.
+
+`--book` reads a book yaml shaped like `templates/book.yaml` (`title`, `subtitle`,
+`chapters`/`parts` with `- part:` and `- <note>.md`): book -> part -> note, where a note
+label is its filename without `.md` and with `-`/`_` turned into spaces.
+
+Both modes produce ordinary DSL. `--direction` still applies; without it the tree is `LR`.
+
+### 2.3 PNG
+
+- A `.png` output path (or `--png`) rasterizes through an installed Edge/Chrome/Chromium
+  in headless mode. Nothing is installed by this project.
+- `--scale 1|2|3` (default `2`) scales the outer SVG dimensions; the drawing stays crisp
+  because the SVG is re-rendered at the target size.
+- `--transparent` omits the background (PNG alpha channel; SVG without the background rect).
+- Browser lookup: `--browser PATH`, then `DIAGRAM_STUDIO_BROWSER`, then the usual install
+  paths, then `PATH`. Failure is exit `2` with an actionable message.
 
 ## 3. Browser UI
 
@@ -157,20 +192,26 @@ node cli.js --help
 - Flow select rewrites the `direction:` line (inserts at the top if missing).
 - Pan: drag anywhere on the stage. Zoom: wheel, pointer-anchored, 0.2–8×. Double-click or
   `Fit` resets. `100%` means the base fit.
-- Autosave: `localStorage["diagram-studio-v1"]` stores `{ text, theme }`; guarded with
-  try/catch for `file://` and private modes.
+- Autosave: `localStorage["diagram-studio-v1"]` stores `{ text, theme, pngScale, transparent }`;
+  guarded with try/catch for `file://` and private modes.
 - `Ctrl/Cmd+S` downloads SVG.
 - Exports always re-render from the model (not the panned DOM).
+- PNG scale select: 1x/2x/3x (default 2x). Clear checkbox: export without a background.
+  The UI caps the longest PNG side at 6000 px.
 
 ## 4. Exports
 
 | Export | Contract |
 |---|---|
-| SVG | Self-contained; numeric `width`/`height`; background included; file `slug(title).svg` |
-| PNG | Rasterized at 2×, capped so the longest side ≤ 6000 px; file `slug(title)@2x.png` |
+| SVG | Self-contained; numeric `width`/`height`; background included unless Clear; file `slug(title).svg` (`-clear` suffix when transparent) |
+| PNG | Rasterized at the selected scale (1x/2x/3x), capped so the longest side ≤ 6000 px in the UI; file `slug(title)@Nx.png`; `-clear` suffix when transparent |
 | Preview | Same SVG with `background:false` so the stage grid shows |
 
 The slug is lowercase, non-alphanumerics collapsed to `-`, fallback `diagram`.
+
+Marker ids are `ds-arrow-<8 hex>` derived from theme, title, size and node order. Two
+different diagrams on one page therefore use different arrow markers; identical renders
+reuse the same id.
 
 ## 5. Compatibility aliases
 
@@ -179,8 +220,9 @@ Accepted for muscle memory: `graph`/`flowchart`, `-->`, quoted labels, `\n` in l
 
 ## 6. Non-goals
 
-- Markdown documents are not parsed as diagrams (indented text without arrows is the one
-  exception).
+- Markdown is not parsed as a diagram in the DSL path; `--outline`/`--book` is an explicit
+  conversion step that emits tree-mode DSL.
 - No sequence, class, ER or Gantt semantics.
 - No subgraph ranks, no port selection, no obstacle-avoiding routing.
 - No remote fonts or images; nothing is fetched at runtime.
+- No bundled rasterizer: PNG uses an installed Chromium browser.

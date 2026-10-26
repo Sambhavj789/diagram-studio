@@ -55,6 +55,20 @@
     return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'group';
   }
 
+  // Stable 8-hex digest. Used to give every rendered SVG its own marker id, so two
+  // diagrams with different themes can live on the same HTML page without leaking
+  // arrow colours (D-010). No crypto, no dependency, same input -> same id.
+  function digest(s) {
+    var h = 2166136261;
+    var str = String(s == null ? '' : s);
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    h = (h >>> 0).toString(16);
+    return '00000000'.slice(h.length) + h;
+  }
+
   var _ctx = null;
   function measure(text, font) {
     var s = String(text == null ? '' : text);
@@ -492,8 +506,6 @@
     });
 
     var backCount = 0;
-    var maxRb = contentRight;
-    var maxBb = contentBottom;
     var outEdges = [];
 
     function cubicMid(p0, c1, c2, p1) {
@@ -507,7 +519,7 @@
     edges.forEach(function (e) {
       var s = pos[e.from];
       var t = pos[e.to];
-      var path, mid, p0, c1, c2, p1;
+      var mid, p0, c1, c2, p1;
 
       if (e.from === e.to) {
         if (dir === 'TB') {
@@ -523,7 +535,6 @@
           p1 = { x: s.x + s.w, y: s.cy + 9 };
           mid = { x: s.x + s.w + 56, y: s.cy };
         }
-        path = 'M ' + p0.x + ' ' + p0.y + ' C ' + c1.x + ' ' + c1.y + ', ' + c2.x + ' ' + c2.y + ', ' + p1.x + ' ' + p1.y;
       } else if (dir === 'TB') {
         var skipTb = rank[e.to] - rank[e.from] > 1;
         var isBackTb = rank[e.to] <= rank[e.from] || skipTb;
@@ -540,9 +551,7 @@
           p1 = { x: t.x + t.w, y: t.cy };
           c1 = { x: rb, y: p0.y };
           c2 = { x: rb, y: p1.y };
-          maxRb = Math.max(maxRb, rb);
         }
-        path = 'M ' + p0.x + ' ' + p0.y + ' C ' + c1.x + ' ' + c1.y + ', ' + c2.x + ' ' + c2.y + ', ' + p1.x + ' ' + p1.y;
         mid = cubicMid(p0, c1, c2, p1);
       } else {
         var skipLr = rank[e.to] - rank[e.from] > 1;
@@ -560,9 +569,7 @@
           p1 = { x: t.cx, y: t.y + t.h };
           c1 = { x: p0.x, y: bb };
           c2 = { x: p1.x, y: bb };
-          maxBb = Math.max(maxBb, bb);
         }
-        path = 'M ' + p0.x + ' ' + p0.y + ' C ' + c1.x + ' ' + c1.y + ', ' + c2.x + ' ' + c2.y + ', ' + p1.x + ' ' + p1.y;
         mid = cubicMid(p0, c1, c2, p1);
       }
 
@@ -571,13 +578,76 @@
         to: e.to,
         label: e.label,
         style: e.style,
-        path: path,
+        points: { p0: p0, c1: c1, c2: c2, p1: p1 },
         labelPos: mid
       });
     });
 
-    var width = Math.max(contentRight, maxRb) + PAD;
-    var height = Math.max(contentBottom, maxBb) + PAD;
+    // Bounds include every label box and every curve point, not only the node boxes.
+    // Without this a long label on the right-most edge was clipped by the canvas.
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    function grow(x, y) {
+      if (!isFinite(x) || !isFinite(y)) return;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+
+    ids.forEach(function (id) {
+      var p = pos[id];
+      grow(p.x, p.y);
+      grow(p.x + p.w, p.y + p.h);
+    });
+    groupBoxes.forEach(function (g) {
+      grow(g.x, g.y);
+      grow(g.x + g.w, g.y + g.h);
+    });
+    outEdges.forEach(function (e) {
+      e.labelBox = null;
+      if (e.label) {
+        var txt = String(e.label).replace(/\s*\n\s*/g, ' ');
+        var lw = Math.ceil(measure(txt, '500 11px ' + FONT_STACK)) + 14;
+        e.labelBox = { x: e.labelPos.x - lw / 2, y: e.labelPos.y - 9, w: lw, h: 18 };
+      }
+      [e.points.p0, e.points.c1, e.points.c2, e.points.p1].forEach(function (p) { grow(p.x, p.y); });
+      if (e.labelBox) {
+        grow(e.labelBox.x, e.labelBox.y);
+        grow(e.labelBox.x + e.labelBox.w, e.labelBox.y + e.labelBox.h);
+      }
+    });
+
+    // A self loop or a label can reach past the left/top padding; shift the whole
+    // drawing instead of clipping it. Everything (nodes, groups, curves, labels)
+    // moves by the same delta so the layout stays coherent.
+    var shiftX = minX < PAD ? PAD - minX : 0;
+    var shiftY = minY < PAD ? PAD - minY : 0;
+    if (shiftX || shiftY) {
+      function move(p) { p.x += shiftX; p.y += shiftY; }
+      ids.forEach(function (id) {
+        var p = pos[id];
+        move(p);
+        p.cx += shiftX;
+        p.cy += shiftY;
+      });
+      groupBoxes.forEach(move);
+      outEdges.forEach(function (e) {
+        [e.points.p0, e.points.c1, e.points.c2, e.points.p1].forEach(move);
+        move(e.labelPos);
+        if (e.labelBox) move(e.labelBox);
+      });
+      maxX += shiftX;
+      maxY += shiftY;
+    }
+
+    outEdges.forEach(function (e) {
+      var p = e.points;
+      e.path = 'M ' + p.p0.x + ' ' + p.p0.y + ' C ' + p.c1.x + ' ' + p.c1.y + ', ' + p.c2.x + ' ' + p.c2.y + ', ' + p.p1.x + ' ' + p.p1.y;
+    });
+
+    var width = Math.max(maxX, 0) + PAD;
+    var height = Math.max(maxY, 0) + PAD;
     var titleWidth = model.title ? measure(model.title, '700 16px ' + FONT_STACK) + 60 : 0;
     width = Math.max(width, titleWidth, 200);
     height = Math.max(height, 140);
@@ -599,11 +669,14 @@
     var theme = THEMES[opts.theme] || THEMES.light;
     var w = Math.max(1, Math.ceil(lay.width));
     var h = Math.max(1, Math.ceil(lay.height));
+    var themeName = THEMES[opts.theme] ? opts.theme : 'light';
+    var arrowId = opts.arrowId ||
+      ('ds-arrow-' + digest([themeName, model.title || '', w, h, (lay.order || []).join(',')].join('|')));
     var parts = [];
 
     parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="' + esc(model.title || 'Diagram') + '">');
     parts.push('<defs>');
-    parts.push('<marker id="ds-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="' + theme.edge + '"/></marker>');
+    parts.push('<marker id="' + arrowId + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="' + theme.edge + '"/></marker>');
     parts.push('</defs>');
     if (opts.background !== false) {
       parts.push('<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="' + theme.bg + '"/>');
@@ -620,15 +693,17 @@
 
     lay.edges.forEach(function (e) {
       var dash = e.style === 'dashed' ? ' stroke-dasharray="6 5"' : '';
-      var start = e.style === 'both' ? ' marker-start="url(#ds-arrow)"' : '';
-      parts.push('<path d="' + e.path + '" fill="none" stroke="' + theme.edge + '" stroke-width="1.7" stroke-linecap="round"' + dash + ' marker-end="url(#ds-arrow)"' + start + '/>');
+      var start = e.style === 'both' ? ' marker-start="url(#' + arrowId + ')"' : '';
+      parts.push('<path d="' + e.path + '" fill="none" stroke="' + theme.edge + '" stroke-width="1.7" stroke-linecap="round"' + dash + ' marker-end="url(#' + arrowId + ')"' + start + '/>');
       if (e.label) {
         var txt = String(e.label).replace(/\s*\n\s*/g, ' ');
-        var lw = Math.ceil(measure(txt, '500 11px ' + FONT_STACK)) + 14;
-        var lx = e.labelPos.x;
-        var ly = e.labelPos.y;
-        parts.push('<rect x="' + (lx - lw / 2) + '" y="' + (ly - 9) + '" width="' + lw + '" height="18" rx="5" fill="' + theme.labelBg + '" stroke="' + theme.edge + '" stroke-opacity="0.22"/>');
-        parts.push('<text x="' + lx + '" y="' + (ly + 4) + '" text-anchor="middle" font-family="' + esc(FONT_STACK) + '" font-size="11" font-weight="500" fill="' + theme.muted + '">' + esc(txt) + '</text>');
+        var box = e.labelBox;
+        if (!box) {
+          var lw = Math.ceil(measure(txt, '500 11px ' + FONT_STACK)) + 14;
+          box = { x: e.labelPos.x - lw / 2, y: e.labelPos.y - 9, w: lw, h: 18 };
+        }
+        parts.push('<rect x="' + box.x + '" y="' + box.y + '" width="' + box.w + '" height="' + box.h + '" rx="5" fill="' + theme.labelBg + '" stroke="' + theme.edge + '" stroke-opacity="0.22"/>');
+        parts.push('<text x="' + e.labelPos.x + '" y="' + (e.labelPos.y + 4) + '" text-anchor="middle" font-family="' + esc(FONT_STACK) + '" font-size="11" font-weight="500" fill="' + theme.muted + '">' + esc(txt) + '</text>');
       }
     });
 

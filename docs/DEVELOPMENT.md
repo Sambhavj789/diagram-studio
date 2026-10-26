@@ -1,7 +1,7 @@
 ---
 title: Development
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Development
@@ -9,7 +9,7 @@ updated: 2026-10-22
 ## Prerequisites
 
 - Node 18+ (verified on Node 24). No `npm install`, no packages.
-- A Chromium browser (Edge/Chrome) for the UI. `file://` is supported.
+- A Chromium browser (Edge/Chrome) for the UI and for CLI PNG. `file://` is supported.
 - Optional: Playwright if it is already available in another project; otherwise use the
   headless screenshot recipe below.
 
@@ -26,6 +26,9 @@ CLI:
 ```powershell
 node cli.js examples/report-pipeline.txt -o out/report.svg
 node cli.js examples/company-map.txt --theme dark -o out/company.svg
+node cli.js examples/outline.md --outline -o out/outline.svg
+node cli.js ..\..\hq\10-atlas\ml\books\ml-foundations.yaml --book -o out\book-map.svg
+node cli.js examples/report-pipeline.txt -o out/report.png --scale 2
 ```
 
 ## Verify
@@ -39,7 +42,7 @@ The gate checks:
 1. All required docs exist, are non-trivial, and have front matter.
 2. Every relative link inside `docs/*.md` resolves.
 3. Every source file appears in `docs/CODEMAP.md`.
-4. Core tests pass (`node test-core.js`, 17 checks).
+4. Core tests pass (`node test-core.js`, 28 checks).
 5. The CLI produces an SVG for a real example, with a background rect.
 6. No unexpected `require()` calls (no dependencies).
 
@@ -54,17 +57,21 @@ node cli.js examples/report-pipeline.txt -o out/report.svg
 
 | Behavior | Automated | Manual |
 |---|---|---|
-| DSL parsing, shapes, labels, edge styles | `test-core.js` | — |
-| Tree mode | `test-core.js` | — |
-| Cycle / self-loop / skip-edge routing | `test-core.js` | — |
-| No same-rank overlap, canvas bounds | `test-core.js` | — |
-| Groups | `test-core.js` | — |
-| Determinism | `test-core.js` | — |
-| Error line numbers | `test-core.js` | — |
+| DSL parsing, shapes, labels, edge styles | `test-core.js` | - |
+| Tree mode | `test-core.js` | - |
+| Cycle / self-loop / skip-edge routing | `test-core.js` | - |
+| No same-rank overlap, canvas bounds | `test-core.js` | - |
+| Groups | `test-core.js` | - |
+| Determinism | `test-core.js` | - |
+| Error line numbers | `test-core.js` | - |
 | Theme tokens / SVG shell / escaping | `test-core.js` | visual check |
-| Browser render, pan/zoom, autosave | — | checklist below |
+| Marker ids per render | `test-core.js` | two diagrams on one page |
+| Label boxes / self-loop bounds | `test-core.js` | visual check |
+| Markdown + book outline | `test-core.js` | `--outline` on a real note |
+| CLI `--png` scale + transparent | `test-core.js` (skips without a browser) | open the PNG |
+| Browser render, pan/zoom, autosave | - | checklist below |
 | SVG download | CLI smoke | click + open the file |
-| PNG 2× download | — | checklist below |
+| PNG 1x/2x/3x + Clear | - | checklist below |
 
 ### Browser checklist (2 minutes)
 
@@ -74,8 +81,9 @@ node cli.js examples/report-pipeline.txt -o out/report.svg
 4. Break the DSL (type a lone `A ->`); a line-numbered error appears and the old diagram
    stays. Fix it.
 5. Download SVG; open it in the browser (it must have a background and no missing fonts).
-6. Download PNG; check it is 2× the SVG's dimensions and not blank.
-7. Reload; the text and theme are restored.
+6. Pick PNG 3x and Clear, download; check the size is 3x the SVG and the background is
+   transparent. Then set 2x and no Clear and check the normal export.
+7. Reload; the text, theme, PNG scale and Clear state are restored.
 
 ### Headless screenshot (no Playwright)
 
@@ -84,6 +92,12 @@ $edge = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 & $edge --headless=new --disable-gpu --hide-scrollbars --window-size=1440,900 `
   --virtual-time-budget=2500 --user-data-dir="$env:TEMP\ds-edge" `
   --screenshot="out\ui.png" "file:///$((Resolve-Path index.html).Path -replace '\\','/')"
+```
+
+CLI PNG (same idea, no Playwright):
+
+```powershell
+node cli.js examples/report-pipeline.txt -o out\report.png --scale 2 --json
 ```
 
 If the profile directory is locked, use a fresh one. This verifies rendering, not clicks.
@@ -97,7 +111,7 @@ node -e "const c=require('./core.js'),f=require('fs');const r=c.parse(f.readFile
 ```
 
 - Wrong node/label: log `res.model.nodes`.
-- Overlap/bounds: log `lay.nodes` (x/y/w/h) and `lay.width/height`.
+- Overlap/bounds: log `lay.nodes` (x/y/w/h), `lay.edges[].labelBox` and `lay.width/height`.
 - Bad path: log `lay.edges[].path` and search for `NaN`.
 - UI state: `state.view`, `localStorage["diagram-studio-v1"]` in DevTools.
 
@@ -108,7 +122,7 @@ Example: add a `hexagon` shape.
 1. `core.js` `nodeToken()`: recognize the delimiter (pick one not used by labels).
 2. `layout()` sizing: decide width/height multipliers.
 3. `renderSVG()`: draw the polygon; keep text centered with the existing code.
-4. `docs/SPEC.md`: add the delimiter to §1.4 and shape list.
+4. `docs/SPEC.md`: add the delimiter to section 1.4 and the shape list.
 5. `test-core.js`: assert the parsed shape and that the SVG contains the polygon.
 6. `node verify.js`.
 
@@ -132,7 +146,7 @@ Edit the `.dsl` source, never the SVG by hand.
 - Update `CURRENT_STATE.md` with a new verified date and any new limit.
 - Add a `CHANGELOG.md` line for user-visible changes.
 - Supersede, don't delete: mark `status: superseded` and link the replacement.
-- `verify.js` catches missing docs, broken links and unmapped files — not stale prose.
+- `verify.js` catches missing docs, broken links and unmapped files - not stale prose.
   Freshness is a review responsibility.
 
 ## Release / handoff
@@ -143,4 +157,4 @@ Edit the `.dsl` source, never the SVG by hand.
 4. `CHANGELOG.md` entry.
 5. Copy the folder as-is (no build artifacts); `out/` is optional.
 
-There is no version file; use `CHANGELOG.md` headings (`0.1.0`) and the verified date.
+There is no version file; use `CHANGELOG.md` headings (`0.2.0`) and the verified date.

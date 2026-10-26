@@ -6,7 +6,8 @@ Read this before changing code. It is the AI entry point; humans start at `docs/
 
 Offline text → diagram tool. Zero runtime dependencies, no build step. `core.js` (parser,
 layout, SVG renderer) is shared by the browser UI (`app.js` + `index.html`) and the CLI
-(`cli.js`).
+(`cli.js`). `outline.js` converts Markdown/book yaml to DSL; `raster.js` adds PNG through
+an installed browser.
 
 ## Read order (keep it under ~10k tokens)
 
@@ -14,7 +15,8 @@ layout, SVG renderer) is shared by the browser UI (`app.js` + `index.html`) and 
 2. `docs/ARCHITECTURE.md` — pipeline and stage contracts
 3. `docs/CODEMAP.md` — only the files/symbols you are about to touch
 4. `docs/SPEC.md` — only the section for the behavior you change
-5. `docs/DEVELOPMENT.md` — verify command and the add-a-feature recipe
+5. `docs/DEVELOPMENT.md` - verify command and the add-a-feature recipe
+6. `docs/INTEGRATIONS.md` - only when wiring a report, book, note or deck
 
 Do not read `out/` (generated samples), `docs/CHANGELOG.md` (history), or the full README
 unless the task actually needs them.
@@ -50,6 +52,8 @@ CODEMAP coverage. `node test-core.js` alone is not "done".
 | SVG look | `core.js` `renderSVG()` + `THEMES` |
 | UI behavior | `app.js`, `styles.css` |
 | CLI | `cli.js`, `docs/SPEC.md` |
+| Outline input | `outline.js`, `cli.js`, `docs/SPEC.md` |
+| PNG export | `raster.js`, `app.js`, `docs/SPEC.md` |
 | Docs gate | `verify.js` |
 | Architecture picture | `docs/assets/*.dsl` → regenerate SVG (see DEVELOPMENT) |
 

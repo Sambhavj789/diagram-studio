@@ -32,6 +32,7 @@ const DOCS = [
   'docs/CODEMAP.md',
   'docs/SPEC.md',
   'docs/DEVELOPMENT.md',
+  'docs/INTEGRATIONS.md',
   'docs/DECISIONS.md',
   'docs/TROUBLESHOOTING.md',
   'docs/CURRENT_STATE.md',
@@ -102,8 +103,8 @@ const codemap = exists('docs/CODEMAP.md') ? read('docs/CODEMAP.md') : '';
 const unmapped = SOURCES.filter((f) => !codemap.includes('`' + f + '`'));
 ok(unmapped.length === 0, 'every source file is in CODEMAP', 'missing: ' + unmapped.join(', '));
 
-const jsFiles = ['core.js', 'app.js', 'cli.js', 'test-core.js', 'verify.js'];
-const allowed = new Set(['fs', 'path', 'child_process', 'assert', './core.js']);
+const jsFiles = ['core.js', 'outline.js', 'raster.js', 'app.js', 'cli.js', 'test-core.js', 'verify.js'];
+const allowed = new Set(['fs', 'os', 'path', 'url', 'child_process', 'assert', './core.js', './outline.js', './raster.js']);
 const badRequires = [];
 
 jsFiles.forEach((rel) => {

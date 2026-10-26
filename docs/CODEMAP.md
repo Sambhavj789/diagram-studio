@@ -1,7 +1,7 @@
 ---
 title: Code map
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Code map
@@ -19,8 +19,10 @@ search the symbol name instead.
 | `app.js` | 12 KB | Editor wiring, render loop, pan/zoom, theme, autosave, SVG/PNG download. |
 | `index.html` | 3 KB | App shell, toolbar, source pane, stage, cheat sheet. |
 | `styles.css` | 8 KB | App UI only. Never affects exported SVG. |
-| `cli.js` | 3 KB | Headless SVG generation, argument parsing, exit codes. |
-| `test-core.js` | 5 KB | 14 behavioral checks for parse/layout/render. |
+| `cli.js` | 6 KB | Headless SVG/PNG generation, argument parsing, outline modes, exit codes. |
+| `outline.js` | 4 KB | Markdown headings/lists and book yaml -> tree-mode DSL. Pure. |
+| `raster.js` | 5 KB | Headless-browser PNG export, scale/transparent, browser lookup. |
+| `test-core.js` | 12 KB | 28 behavioral checks for parse/layout/render/outline/CLI. |
 | `verify.js` | — | One-command gate: tests + CLI smoke + docs/link/CODEMAP checks. |
 | `README.md` | 3 KB | Human quick start and syntax summary. |
 | `AGENTS.md` | 3 KB | AI entry: read order, invariants, done checklist. |
@@ -35,6 +37,7 @@ search the symbol name instead.
 | `THEMES` | Color tokens for `light` / `dark` | Renderer reads only this; no hard-coded colors elsewhere |
 | `esc` | XML/HTML escaping | Every text/label passes through it |
 | `slug` | Safe filename / group id | Lowercase, `[a-z0-9-]` |
+| `digest` | Stable 8-hex marker suffix | Theme + title + size + node order; no crypto |
 | `measure` | Text width (`canvas` in browser, 7.1 px/char in Node) | Guarded DOM; never required |
 | `labelText` | Trim, strip wrapping quotes, turn `\n` into a line break | One source of label normalization |
 | `ARROW_RE` / `nodeToken` | Tokenize an edge / a node reference | Shapes: box, stadium, diamond, circle |
@@ -70,10 +73,30 @@ search the symbol name instead.
 
 | Symbol | Responsibility |
 |---|---|
-| `parseArgs` | `-o/--out`, `--theme`, `--direction`, `-`, `--help` |
-| `main` | Read, parse, optional overrides, layout, write, summary line |
+| `parseArgs` | `-o/--out`, `--theme`, `--direction`, `--json`, `--outline/--md`, `--book`, `--png`, `--scale`, `--transparent`, `--browser` |
+| `main` | Read, optional outline conversion, parse, overrides, layout, SVG or PNG, summary line |
 
 Exit codes: `0` ok, `1` parse error, `2` bad args/IO/theme.
+
+## `outline.js`
+
+| Symbol | Responsibility | Invariant |
+|---|---|---|
+| `inline` | Strip Markdown/HTML/wiki syntax from one label | Never throws |
+| `label` | One safe tree line | No arrows, no leading comment marker |
+| `listItem` | Recognize `-`/`*`/`+`/numbered items and indent | Tabs = 2 spaces |
+| `markdownToDsl` | Headings + lists -> items | Skips front matter, fences, quotes, tables |
+| `bookYamlToDsl` | Book yaml -> book -> part -> note items | Note label = filename, `-`/`_` -> space |
+| `itemsToDsl` | Items -> indented DSL | One root; two spaces per level |
+| `toDsl` | Pick Markdown or book mode by shape | Book detection is `chapters:`/`- part:` |
+
+## `raster.js`
+
+| Symbol | Responsibility | Invariant |
+|---|---|---|
+| `findBrowser` | Explicit path -> env -> install paths -> PATH | Never installs anything |
+| `svgSize` / `scaledSvg` | Read and scale the outer SVG only | viewBox untouched |
+| `renderPng` | Write a one-page HTML, screenshot it, clean up | Only builtin modules; timeout 60 s |
 
 ## Where to change what
 
@@ -105,8 +128,9 @@ test for overlap/bounds if the change can move nodes.
 
 ### Add an export format
 
-`app.js` export function + `download()`; update `docs/SPEC.md` UI contract. CLI stays
-SVG-only unless the format works in Node without new dependencies.
+`app.js` export function + `download()`; update `docs/SPEC.md` UI contract. For the CLI,
+either keep it in `core.js`/`raster.js`-style builtins or add a documented tool check
+(PNG uses the installed browser, not a package).
 
 ### Change the look
 
@@ -130,6 +154,12 @@ SVG-only unless the format works in Node without new dependencies.
 | trailing arrow line number | Edge with no target |
 | deterministic layout | Same model → identical positions and paths |
 | empty input | Blank-canvas path |
+| marker ids | Stable per render, different across themes |
+| label boxes | Long label on a loop grows the canvas instead of clipping |
+| self-loop bounds | A loop on the top node stays inside the canvas |
+| Markdown/book outline | Heading/list and part/note hierarchy -> tree |
+| CLI `--outline` | Generated tree SVG for a Markdown file |
+| CLI `--png` | Scaled PNG header + transparent alpha (skipped when no browser) |
 
 Manual checks (documented in DEVELOPMENT): browser render, theme toggle, pan/zoom,
 autosave, SVG download, PNG download, headless screenshot.

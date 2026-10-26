@@ -1,7 +1,7 @@
 ---
 title: Decisions
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Decisions
@@ -9,6 +9,44 @@ updated: 2026-10-22
 Append-only, ADR-lite. Add `D-0NN` at the top of the list with date, context, decision and
 consequences. Never delete a decision: mark it superseded and link the new one. After ~10
 entries, promote each to `docs/adr/NNN-title.md` and leave one-line stubs here.
+
+## D-013 — Bounds include labels, not only boxes (2026-10-27)
+
+**Context:** The canvas was sized from node/group boxes and edge anchors. A long label on a
+right-most lane could be cut off, and a self loop above the top node went negative.
+**Decision:** `layout()` grows bounds from every curve point and every full label box, then
+shifts the whole drawing when the minimum is below the padding.
+**Consequences:** No clipped labels and no negative geometry; some diagrams get a few pixels
+wider/taller. A regression test covers both cases.
+
+## D-012 — PNG comes from the installed browser (2026-10-27)
+
+**Context:** Reports (`ai-report`, python-docx) and books need a raster image; the old PNG
+path existed only in the browser UI, so a script could not produce one.
+**Decision:** `cli.js` writes PNG by asking Edge/Chrome/Chromium headless for a screenshot
+of a one-page HTML wrapper. No npm dependency, no bundled rasterizer. `--scale 1-3` and
+`--transparent` are CLI flags; the UI exposes the same two options.
+**Consequences:** PNG works offline on the founder's machines and in the book pipeline;
+a machine without a Chromium browser can still produce SVG, and the error says exactly
+what to install or which env var (`DIAGRAM_STUDIO_BROWSER`) to set.
+
+## D-011 — Outline input is a separate, pure converter (2026-10-27)
+
+**Context:** Books and notes are Markdown; retyping a tree by hand loses the source of truth.
+**Decision:** `outline.js` converts Markdown headings/lists or a book yaml into the existing
+tree-mode DSL. The parser and layout do not learn Markdown.
+**Consequences:** One small module and two CLI flags; headings, lists, front matter and code
+fences are handled, paragraphs/tables/quotes are ignored. The DSL stays the only diagram
+format, so a generated outline can still be hand-edited.
+
+## D-010 — Marker ids are derived from the render (2026-10-27)
+
+**Context:** Two SVGs on one page shared `#ds-arrow`; a dark diagram could pick up a light
+arrow colour.
+**Decision:** `renderSVG()` derives `ds-arrow-<8 hex>` from theme, title, size and node
+order. Same input gives the same id; different themes get different ids.
+**Consequences:** Multiple diagrams per page are safe without callers passing an id; the
+id is stable across runs, so diffs stay clean.
 
 ## D-009 — Outside lanes for back, equal-rank and rank-skipping edges (2026-10-22)
 

@@ -1,18 +1,20 @@
 ---
-title: Diagram Studio — docs index
+title: Diagram Studio - docs index
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Diagram Studio docs
 
 **30 seconds:** an offline text → diagram tool. You write a small DSL, it produces a
-layered SVG you can download (and a 2× PNG). `core.js` is pure and shared by the browser
-app and the CLI. No dependencies, no build, no network.
+layered SVG you can download (and a 1x/2x/3x PNG). `core.js` is pure and shared by the
+browser app and the CLI. No dependencies, no build, no network.
 
 ```powershell
 start index.html                      # browser app
 node cli.js examples/company-map.txt -o company.svg
+node cli.js examples/outline.md --outline -o outline.svg
+node cli.js examples/report-pipeline.txt -o report.png --scale 2
 node verify.js                        # the only "done" gate
 ```
 
@@ -25,6 +27,7 @@ node verify.js                        # the only "done" gate
 | [ARCHITECTURE.md](ARCHITECTURE.md) | You need the pipeline, data shapes, layout algorithm or boundaries |
 | [CODEMAP.md](CODEMAP.md) | You need to find a function or know which file to change |
 | [SPEC.md](SPEC.md) | You change DSL behavior, CLI arguments, UI behavior or exports |
+| [INTEGRATIONS.md](INTEGRATIONS.md) | You wire the tool into a report, book, note or slide deck |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | You run, test, debug or add a feature |
 | [DECISIONS.md](DECISIONS.md) | You wonder why it is built this way, or you add a big decision |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Something renders wrong, an export fails, or verify is red |
@@ -39,16 +42,19 @@ Root entry points: [`AGENTS.md`](../AGENTS.md) for AI agents,
 - **New contributor:** this page → `README.md` → `ARCHITECTURE.md` → `DEVELOPMENT.md`.
 - **AI with a small task:** `AGENTS.md` → this page → the one section of `CODEMAP.md` →
   the symbol in `core.js` → the matching test.
+- **Wire it into a report/book:** `INTEGRATIONS.md` → `SPEC.md` section 2 (CLI) → the
+  project's own build script.
 - **Debug a bad render:** `TROUBLESHOOTING.md` → `ARCHITECTURE.md` layout section →
   dump `parse()` / `layout()` in Node.
 - **Release / handoff:** `CURRENT_STATE.md` → `CHANGELOG.md` → verify.
 
 ## Current truth
 
-- Last verified: **2026-10-22** with `node verify.js` (17 core checks + CLI + docs gate).
-- Status: **v0.1, usable**. Browser app, CLI, light/dark, SVG/PNG export.
+- Last verified: **2026-10-27** with `node verify.js` (28 core checks + CLI + docs gate).
+- Status: **v0.2, usable company-wide**. Browser app, CLI, light/dark, SVG/PNG export,
+  outline/book input, report and book integration.
 - Known limits are listed in [CURRENT_STATE.md](CURRENT_STATE.md); do not "fix" them by
-  guessing — add a test first.
+  guessing - add a test first.
 
 ## Ground rules
 

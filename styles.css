@@ -125,6 +125,26 @@ body {
 
 .field.compact select { padding-right: 8px; width: 132px; padding-right: 6px; }
 
+.field.scale select { width: 64px; padding-right: 4px; }
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.check input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .divider {
   width: 1px;
   height: 26px;

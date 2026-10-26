@@ -95,6 +95,8 @@
     themeBtn: document.getElementById('themeBtn'),
     svgBtn: document.getElementById('svgBtn'),
     pngBtn: document.getElementById('pngBtn'),
+    pngScale: document.getElementById('pngScale'),
+    transparent: document.getElementById('transparent'),
     stage: document.getElementById('stage'),
     canvas: document.getElementById('canvas'),
     zoomIn: document.getElementById('zoomIn'),
@@ -129,7 +131,9 @@
     try {
       localStorage.setItem(KEY, JSON.stringify({
         text: els.source.value,
-        theme: state.theme
+        theme: state.theme,
+        pngScale: parseInt(els.pngScale.value, 10) || 2,
+        transparent: els.transparent.checked
       }));
     } catch (e) { /* ignore */ }
   }
@@ -245,18 +249,21 @@
 
   function exportSVG() {
     if (!state.model) return;
-    var svg = core.renderSVG(state.model, state.layout, { theme: state.theme });
-    download(slug(state.model.title) + '.svg', new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+    var clear = els.transparent.checked;
+    var svg = core.renderSVG(state.model, state.layout, { theme: state.theme, background: !clear });
+    download(slug(state.model.title) + (clear ? '-clear' : '') + '.svg', new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
   }
 
   function exportPNG() {
     if (!state.model) return;
-    var svg = core.renderSVG(state.model, state.layout, { theme: state.theme });
+    var wanted = Math.min(3, Math.max(1, parseInt(els.pngScale.value, 10) || 2));
+    var clear = els.transparent.checked;
+    var svg = core.renderSVG(state.model, state.layout, { theme: state.theme, background: !clear });
     var m = svg.match(/<svg[^>]*width="(\d+)"[^>]*height="(\d+)"/);
     if (!m) { showError('PNG export failed. Use SVG instead.'); return; }
     var w = parseInt(m[1], 10);
     var h = parseInt(m[2], 10);
-    var scale = Math.min(2, 6000 / Math.max(w, h));
+    var scale = Math.min(wanted, 6000 / Math.max(w, h));
     var img = new Image();
     var url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
 
@@ -266,11 +273,13 @@
         c.width = Math.round(w * scale);
         c.height = Math.round(h * scale);
         var ctx = c.getContext('2d');
-        ctx.fillStyle = (core.THEMES[state.theme] || core.THEMES.light).bg;
-        ctx.fillRect(0, 0, c.width, c.height);
+        if (!clear) {
+          ctx.fillStyle = (core.THEMES[state.theme] || core.THEMES.light).bg;
+          ctx.fillRect(0, 0, c.width, c.height);
+        }
         ctx.drawImage(img, 0, 0, c.width, c.height);
         c.toBlob(function (blob) {
-          if (blob) download(slug(state.model.title) + '@2x.png', blob);
+          if (blob) download(slug(state.model.title) + '@' + wanted + 'x' + (clear ? '-clear' : '') + '.png', blob);
           else showError('PNG export failed. Use SVG instead.');
         }, 'image/png');
       } finally {
@@ -339,6 +348,8 @@
 
     els.svgBtn.addEventListener('click', exportSVG);
     els.pngBtn.addEventListener('click', exportPNG);
+    els.pngScale.addEventListener('change', saveSettings);
+    els.transparent.addEventListener('change', saveSettings);
     els.fitBtn.addEventListener('click', fit);
     els.zoomLabel.addEventListener('click', fit);
     els.zoomIn.addEventListener('click', function () { zoomCenter(1.2); });
@@ -391,6 +402,8 @@
       state.theme = saved.theme === 'dark' ? 'dark' : 'light';
       els.source.value = saved.text;
       els.source.setAttribute('data-restored', '1');
+      if (saved.pngScale === 1 || saved.pngScale === 3) els.pngScale.value = String(saved.pngScale);
+      els.transparent.checked = saved.transparent === true;
     } else {
       els.source.value = EXAMPLES[0].text;
       els.examples.value = '0';

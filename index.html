@@ -29,8 +29,20 @@
       </label>
       <button class="btn ghost" id="themeBtn" type="button" title="Toggle diagram theme">Dark</button>
       <span class="divider" aria-hidden="true"></span>
+      <label class="field compact scale">
+        <span>PNG</span>
+        <select id="pngScale" aria-label="PNG export scale">
+          <option value="1">1×</option>
+          <option value="2" selected>2×</option>
+          <option value="3">3×</option>
+        </select>
+      </label>
+      <label class="check" title="No background in the PNG/SVG export">
+        <input type="checkbox" id="transparent">
+        <span>Clear</span>
+      </label>
       <button class="btn primary" id="svgBtn" type="button" title="Download as SVG (Ctrl+S)">Download SVG</button>
-      <button class="btn" id="pngBtn" type="button" title="Download as 2x PNG">PNG</button>
+      <button class="btn" id="pngBtn" type="button" title="Download PNG at the selected scale">PNG</button>
     </div>
   </header>
 

@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const core = require('./core.js');
+const outline = require('./outline.js');
+const raster = require('./raster.js');
 
 const ROOT = __dirname;
 
@@ -152,6 +154,80 @@ D -> C
   });
 });
 
+test('a long edge label grows the canvas instead of clipping', () => {
+  const { lay } = render(`direction: LR
+A -> B
+B -> B : a very long self-loop label that used to be cut off
+`);
+  const loop = lay.edges.find((e) => e.from === 'B' && e.to === 'B' && e.label);
+  assert.ok(loop && loop.labelBox, 'label box missing');
+  assert.ok(loop.labelBox.x >= 0, 'label starts left of the canvas');
+  assert.ok(loop.labelBox.y >= 0, 'label starts above the canvas');
+  assert.ok(loop.labelBox.x + loop.labelBox.w <= lay.width, 'label overflows width');
+  assert.ok(loop.labelBox.y + loop.labelBox.h <= lay.height, 'label overflows height');
+});
+
+test('a self loop on the top node stays inside the canvas', () => {
+  const { lay } = render(`A -> A
+A -> B
+`);
+  const p = lay.nodes.A;
+  assert.ok(p.x >= 0 && p.y >= 0, 'node moved outside');
+  lay.edges.forEach((e) => {
+    const pts = e.points;
+    [pts.p0, pts.c1, pts.c2, pts.p1].forEach((pt) => {
+      assert.ok(pt.x >= 0 && pt.y >= 0, 'self loop point outside: ' + JSON.stringify(pt));
+    });
+  });
+});
+
+test('markdown outline becomes a tree with the heading hierarchy', () => {
+  const dsl = outline.markdownToDsl(`---
+title: front matter is ignored
+---
+# Ml Foundations
+
+## Regression
+
+- Linear model
+  - Gradient descent
+- Ridge
+
+\`\`\`
+- not a list item
+\`\`\`
+`);
+  const res = core.parse(dsl);
+  assert.strictEqual(res.ok, true, JSON.stringify(res.errors));
+  assert.strictEqual(res.model.direction, 'LR');
+  assert.deepStrictEqual(
+    res.model.order.map((id) => res.model.nodes[id].label),
+    ['Ml Foundations', 'Regression', 'Linear model', 'Gradient descent', 'Ridge']
+  );
+  assert.strictEqual(res.model.edges.length, 4);
+});
+
+test('a book yaml becomes a book map', () => {
+  const dsl = outline.bookYamlToDsl(`title: "Ml Foundations"
+chapters:
+  - part: "Part 1 - Regression"
+    notes:
+      - 10-atlas/ml/notes/linear-model.md
+      - 10-atlas/ml/notes/ridge.md
+  - part: "Part 2 - Trees"
+    notes:
+      - 10-atlas/ml/notes/decision-tree.md
+`);
+  const res = core.parse(dsl);
+  assert.strictEqual(res.ok, true, JSON.stringify(res.errors));
+  assert.strictEqual(Object.keys(res.model.nodes).length, 6);
+  assert.strictEqual(res.model.nodes.n0.label, 'Ml Foundations');
+  assert.deepStrictEqual(
+    res.model.order.slice(1).map((id) => res.model.nodes[id].label),
+    ['Part 1 - Regression', 'linear model', 'ridge', 'Part 2 - Trees', 'decision tree']
+  );
+});
+
 test('renders group boxes and assigns members', () => {
   const { model, lay, svg } = render(`group Build {
 A -> B
@@ -186,8 +262,19 @@ test('renders both themes and a valid SVG shell', () => {
   assert.ok(light.startsWith('<svg xmlns='));
   assert.ok(light.includes('width="'));
   assert.ok(dark.includes('#0b1220'));
-  assert.ok(light.includes('marker-end="url(#ds-arrow)"'));
+  assert.ok(/marker-end="url\(#ds-arrow-[0-9a-f]{8}\)"/.test(light), 'light marker id');
   assert.ok((light.match(/<g data-node=/g) || []).length === 2);
+});
+
+test('marker ids are stable per render and differ across themes', () => {
+  const text = 'title: Marker\nA <-> B';
+  const idOf = (svg) => (svg.match(/<marker id="(ds-arrow-[0-9a-f]{8})"/) || [])[1];
+  const light1 = idOf(render(text, 'light').svg);
+  const light2 = idOf(render(text, 'light').svg);
+  const dark = idOf(render(text, 'dark').svg);
+  assert.ok(light1 && dark);
+  assert.strictEqual(light1, light2, 'same input must keep the same id');
+  assert.notStrictEqual(light1, dark, 'different themes must not share an id');
 });
 
 test('reports a line number for a stray closing brace', () => {
@@ -349,5 +436,63 @@ test('cli --json reports a parse error on stdout and writes no SVG', () => {
     removeIfPresent(path.join(ROOT, JSON_BAD_SVG_REL));
   }
 });
+
+test('cli --outline turns markdown into a tree SVG', () => {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  const mdRel = 'out/.outline-test.md';
+  const svgRel = 'out/.outline-test.svg';
+  fs.writeFileSync(path.join(ROOT, mdRel), '# Book\n\n## Chapter\n\n- One\n  - Two\n', 'utf8');
+  try {
+    const res = runCli([mdRel, '--outline', '-o', svgRel, '--json']);
+    assert.strictEqual(res.status, 0, 'exit ' + res.status + ': ' + (res.stderr || '').trim());
+    const data = jsonLine(res.stdout);
+    assert.strictEqual(data.ok, true);
+    assert.strictEqual(data.nodes, 4);
+    const svg = fs.readFileSync(path.join(ROOT, svgRel), 'utf8');
+    assert.ok(svg.includes('Book') && svg.includes('Chapter') && svg.includes('Two'));
+  } finally {
+    removeIfPresent(path.join(ROOT, mdRel));
+    removeIfPresent(path.join(ROOT, svgRel));
+  }
+});
+
+function pngHeader(file, expectedWidth, expectedColor) {
+  const bytes = fs.readFileSync(file);
+  assert.strictEqual(bytes[0], 0x89);
+  assert.strictEqual(bytes.toString('ascii', 1, 4), 'PNG');
+  const width = bytes.readUInt32BE(16);
+  const height = bytes.readUInt32BE(20);
+  assert.strictEqual(width, expectedWidth, 'PNG width');
+  assert.ok(height > 0, 'PNG height');
+  assert.strictEqual(bytes[25], expectedColor, 'PNG color type');
+}
+
+if (raster.findBrowser()) {
+  test('cli --png writes a scaled PNG and --transparent clears the background', () => {
+    fs.mkdirSync(OUT_DIR, { recursive: true });
+    const solidRel = 'out/.png-test.png';
+    const clearRel = 'out/.png-test-clear.png';
+    try {
+      const solid = runCli(['examples/report-pipeline.txt', '-o', solidRel, '--scale', '2', '--json']);
+      assert.strictEqual(solid.status, 0, 'exit ' + solid.status + ': ' + (solid.stderr || '').trim());
+      const one = jsonLine(solid.stdout);
+      assert.strictEqual(one.format, 'png');
+      assert.strictEqual(one.scale, 2);
+      assert.strictEqual(one.transparent, false);
+      pngHeader(path.join(ROOT, solidRel), one.width, 2);
+
+      const clear = runCli(['examples/report-pipeline.txt', '-o', clearRel, '--scale', '1', '--transparent', '--json']);
+      assert.strictEqual(clear.status, 0, 'exit ' + clear.status + ': ' + (clear.stderr || '').trim());
+      const two = jsonLine(clear.stdout);
+      assert.strictEqual(two.transparent, true);
+      pngHeader(path.join(ROOT, clearRel), two.width, 6);
+    } finally {
+      removeIfPresent(path.join(ROOT, solidRel));
+      removeIfPresent(path.join(ROOT, clearRel));
+    }
+  });
+} else {
+  console.log('SKIP  cli --png (no Edge/Chrome/Chromium found)');
+}
 
 console.log('\n' + passed + ' checks passed');

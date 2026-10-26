@@ -1,7 +1,7 @@
 ---
 title: Architecture
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Architecture
@@ -24,7 +24,9 @@ text ──parse()──▶ model ──layout()──▶ geometry ──renderS
                     └── errors (line)     └── positions, paths, bounds, lane offsets
 ```
 
-Three stages, three contracts. The browser and the CLI only orchestrate them.
+Three stages, three contracts. The browser and the CLI only orchestrate them. Two optional
+front/back ends sit outside the core: `outline.js` (Markdown/book yaml -> DSL text) and
+`raster.js` (SVG -> PNG through a headless browser).
 
 ### 1. `parse(text)` → `{ ok, errors, error, model }`
 
@@ -59,7 +61,7 @@ Shapes: `box` (default), `stadium`, `diamond`, `circle`.
 {
   dir, title, order,
   nodes: { [id]: { x, y, w, h, cx, cy, rank, lines } },
-  edges: [{ from, to, label, style, path, labelPos }],
+  edges: [{ from, to, label, style, path, labelPos, labelBox, points }],
   groups: [{ id, label, x, y, w, h }],
   width, height
 }
@@ -106,7 +108,8 @@ iteration follows `order`/array order.
 
 - `input` event → 220 ms debounce → `parse` → `layout` → `renderSVG(background:false)`.
 - Parse failure keeps the last good render and shows the line number.
-- Autosave: `localStorage["diagram-studio-v1"] = { text, theme }` (400 ms debounce).
+- Autosave: `localStorage["diagram-studio-v1"] = { text, theme, pngScale, transparent }`
+  (400 ms debounce).
 - Pan/zoom is a CSS transform on the `<svg>` (`translate` then `scale`), range 0.2–8;
   wheel zooms at the pointer; double-click fits.
 - Exports re-render from the model, not from the transformed DOM:
@@ -115,10 +118,13 @@ iteration follows `order`/array order.
 
 ### CLI (`cli.js`)
 
-- Reads a file or stdin (`-`), parses, optionally overrides theme/direction, lays out,
-  writes one SVG.
-- Exit codes: `0` success, `1` parse error, `2` bad arguments / IO.
-- Prints one summary line: file, nodes, edges, size, direction.
+- Reads a file or stdin (`-`), optionally converts an outline/book yaml, parses, optionally
+  overrides theme/direction, lays out, writes one SVG or PNG.
+- `outline.js` is pure: Markdown headings/lists or a book yaml becomes tree-mode DSL.
+- `raster.js` finds an installed Chromium browser and screenshots a one-page HTML wrapper;
+  no package, no network. PNG failures are exit `2`.
+- Exit codes: `0` success, `1` parse/outline error, `2` bad arguments / IO / missing tool.
+- Prints one summary line: file, nodes, edges, size, direction (plus scale for PNG).
 
 ## Boundaries and failure modes
 
@@ -128,8 +134,8 @@ iteration follows `order`/array order.
 - Bad input is reported, not thrown. Incomplete input still returns a model so the UI can
   show partial state.
 - Recursion is used for cycle detection; keep diagrams under a few hundred nodes.
-- Marker ids are global per SVG document. Embedding two SVGs with different themes in one
-  HTML page can make one use the other's arrow color (same id).
+- Marker ids are derived per render (`ds-arrow-<8 hex>` from theme, title, size and node
+  order), so several diagrams with different themes can share one HTML page safely.
 
 ## Scale notes
 

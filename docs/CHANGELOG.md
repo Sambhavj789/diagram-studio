@@ -1,12 +1,27 @@
 ---
 title: Changelog
 status: active
-updated: 2026-10-22
+updated: 2026-10-27
 ---
 
 # Changelog
 
 User-visible changes, newest first. Format: `## <version> — <date>` then bullets.
+
+## 0.2.0 — 2026-10-27
+
+- CLI: `--outline` / `--md` turns a Markdown outline (headings + lists) into a tree diagram;
+  `--book` turns a `templates/book.yaml`-shaped file (parts + notes) into a book map.
+- CLI: real PNG output without a dependency. `-o out.png` or `--png` uses Edge/Chrome/
+  Chromium headless; `--scale 1|2|3` and `--transparent` (PNG and SVG) are supported.
+  `--browser PATH` / `DIAGRAM_STUDIO_BROWSER` pick the browser.
+- UI: PNG scale 1x/2x/3x select and a Clear (transparent) checkbox; both are autosaved.
+- Marker ids are now `ds-arrow-<hash>`, stable per input+theme, so several diagrams with
+  different themes can live on one HTML page.
+- Layout bounds include full edge-label boxes and edge curve points; long labels no longer
+  clip at the right edge and a self loop on the top node no longer leaves the canvas.
+- `--json` also reports `format`, `scale` and `transparent`.
+- 28 core checks; new `docs/INTEGRATIONS.md` (report, book, slides recipes).
 
 ## 0.1.3 — 2026-10-22
 
